@@ -1,19 +1,23 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Pig : ObjectBase
+public class Pig : ObstacleBase
 {
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         StageManager.SM.PigCount++;
     }
 
     public override void Die()
     {
+        if (wasPointGiven)
+            return;
+
         StageManager.SM.PigCount--;
-        SoundManager.SM.PlayAudio(audioSource, audioClips[0]);
+        SoundManager.SM.PlayRandomAudio(audioSource, dieAudioClips);
         base.Die();
     }
 }

@@ -1,9 +1,9 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static CameraManager cm;
     public static CameraManager CM { get { return cm; } set { cm = value; } }
     private void Awake()
@@ -18,38 +18,41 @@ public class CameraManager : MonoBehaviour
     }
     #endregion
 
-    private Vector3 originPos; // ¿ø·¡ À§Ä¡¸¦ ÀúÀåÇÒ º¯¼ö
-    private Transform target; // ÃßÀûÇÒ Å¸°Ù
-    public Vector3 offset = Vector3.zero; // Å¸°Ù°úÀÇ ¿ÀÇÁ¼Â
-    public float maxDistance; // ÃÖ´ë °Å¸®
-    public float camSpeed; // Ä«¸Ş¶ó ÀÌµ¿ ¼Óµµ
+    private Vector3 originPos;
+    public Vector3 offset = Vector3.zero;
+
+    private Transform target;
+    public int targetLayer;
+    public float maxDistance;
+    public float camSpeed;
 
     private Coroutine cameraCoroutine;
 
     private void Start()
     {
-        StartFollowing(); // Ä«¸Ş¶ó ÄÚ·çÆ¾ ½ÃÀÛ
+        targetLayer = LayerMask.NameToLayer("Bird");
+        StartFollowing(); // ì¹´ë©”ë¼ ì½”ë£¨í‹´ ì‹œì‘
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó Å¸°ÙÀ» ¼³Á¤
+    /// ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì„¤ì •
     /// </summary>
     /// <param name="newTarget"></param>
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
 
-        // ½ÇÇàÁßÀÎ ÄÚ·çÆ¾ÀÌ ÀÖÀ»°æ¿ì Á¤Áö
+        // ì‹¤í–‰ì¤‘ì¸ ì½”ë£¨í‹´ì´ ìˆì„ê²½ìš° ì •ì§€
         if (cameraCoroutine != null)
             StopCoroutine(cameraCoroutine);
         
 
-        StartFollowing(); // »õ Å¸°Ù¿¡ ´ëÇÑ ÃßÀûÀ» ½ÃÀÛ
+        StartFollowing(); // ìƒˆ íƒ€ê²Ÿì— ëŒ€í•œ ì¶”ì ì„ ì‹œì‘
     }
 
     public void StartFollowing()
     {
-        // ÀÌ¹Ì ½ÇÇàÁßÀÎ ÄÚ·çÆ¾ÀÌ ÀÖÀ»°æ¿ì Á¤Áö
+        // ì´ë¯¸ ì‹¤í–‰ì¤‘ì¸ ì½”ë£¨í‹´ì´ ìˆì„ê²½ìš° ì •ì§€
         if (cameraCoroutine != null)
             StopCoroutine(cameraCoroutine);
 
@@ -63,31 +66,20 @@ public class CameraManager : MonoBehaviour
             if (target != null)
             {
                 Vector3 targetPoWithOffset = target.position + offset;
+                Vector3 toTarget = targetPoWithOffset - transform.position;
 
-                float distance = Vector3.Distance(transform.position, targetPoWithOffset);
-                
-                // ÃÖ´ë °Å¸® ÃÊ°ú ½Ã, Å¸°ÙÀ» maxDistance¸¸Å­ µû¶ó°¡µµ·Ï Á¶Á¤
-                if (distance > maxDistance)
-                {
-                    Vector3 dir = (targetPoWithOffset - transform.position).normalized;
-                    transform.position = transform.position + dir * (distance - maxDistance);
-                }
-                else
-                    transform.position = Vector3.Lerp(transform.position, targetPoWithOffset, camSpeed * Time.deltaTime);
-
+                transform.position += toTarget.magnitude > maxDistance 
+                    ? toTarget.normalized * (toTarget.magnitude - maxDistance) : toTarget * (camSpeed * Time.deltaTime);
             }
             else
             {
-                // Å¸°ÙÀÌ ¾øÀ» °æ¿ì ¿ø·¡ À§Ä¡·Î º¹±Í
                 float distance = Vector3.Distance(transform.position, originPos);
 
-                if (distance > 0.2f)
-                    transform.position = Vector3.Lerp(transform.position, originPos, camSpeed * Time.deltaTime);
-                else
-                    transform.position = originPos;
+                transform.position = distance > 0.2f 
+                    ? Vector3.Lerp(transform.position, originPos, camSpeed * Time.deltaTime) : originPos;
             }
 
-            // ÇÁ·¹ÀÓ¸¶´Ù ´ë±â
+            // í”„ë ˆì„ë§ˆë‹¤ ëŒ€ê¸°
             yield return null;
         }
     }

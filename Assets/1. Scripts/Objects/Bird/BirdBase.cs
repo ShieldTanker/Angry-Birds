@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -7,9 +7,12 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class BirdBase : VelocityBase
+public class BirdBase : ObjectBase
 {
     [Header("BirdBase")]
+    public AudioClip flyAudioClip;
+    public AudioClip selectedAudioClip;
+
     public float currentSpeed;
     public float power;
     public int idx;
@@ -22,16 +25,11 @@ public class BirdBase : VelocityBase
     [Space]
     public bool usedAbility;
     public float abilityTime;
-    
+
     [SerializeField] bool isSetted;
-    [SerializeField] public bool Hit;
 
-    [Space]
-    public RectTransform txtEndPos;
-    public TMP_Text pointTxt;
-    public float txtSpeed;
 
-    #region ±âº» ÇÔ¼ö
+    #region ê¸°ë³¸ í•¨ìˆ˜
     public virtual void Start()
     {
         usedAbility = false;
@@ -47,16 +45,16 @@ public class BirdBase : VelocityBase
     {
         currentSpeed = rb.velocity.magnitude;
 
-        // ¹ß»çÃ¼°¡ ÀÚ½ÅÀÌ ¾Æ´Ï°Å³ª ÀÌ¹Ì ¼¼ÆÃÀ» Çß¾ú´Ù¸é ¸®ÅÏ
+        // ë°œì‚¬ì²´ê°€ ìì‹ ì´ ì•„ë‹ˆê±°ë‚˜ ì´ë¯¸ ì„¸íŒ…ì„ í–ˆì—ˆë‹¤ë©´ ë¦¬í„´
         if (SlingShot.SS.ShottedBird != this || isSetted)
             return;
-        
-        if ( Hit == true)
+
+        if (Hit == true)
         {
             stopTime = true;
 
-            // ÀÏÁ¤¼Óµµ ÀÌÇÏÀÌ¸é ³²Àº½Ã°£ ÀÌ¾î Àç»ı
-            if(rb.velocity.magnitude <= resistance)
+            // ì¼ì •ì†ë„ ì´í•˜ì´ë©´ ë‚¨ì€ì‹œê°„ ì´ì–´ ì¬ìƒ
+            if (rb.velocity.magnitude <= resistance)
                 stopTime = false;
         }
 
@@ -65,21 +63,32 @@ public class BirdBase : VelocityBase
             currentTime += Time.deltaTime;
 
             if (currentTime >= initTime)
-                SetBird();   
+                SetBird();
         }
     }
 
-    public virtual void OnCollisionEnter2D(Collision2D collision)
+    public override void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log($"{gameObject.name}ÀÌ {collision.gameObject.name}°ú ºÎ‹HÈû");
         Hit = true;
+
+        float otherSpeed = 0;
+        float speed = prevMagnitude;
+        
+        if (collision.gameObject.GetComponent<ObjectBase>())
+        {
+            ObjectBase otherRb = collision.gameObject.GetComponent<ObjectBase>();
+            otherSpeed = otherRb.prevMagnitude;
+        }
+
+        if (speed >= soundResistance || otherSpeed >= soundResistance)
+            SoundManager.SM.PlayRandomAudio(audioSource, hitAudioClips);
     }
     #endregion
 
-    #region ¸¸µç ÇÔ¼ö
+    #region ë§Œë“  í•¨ìˆ˜
 
     /// <summary>
-    /// »õÀÇ ´É·Â
+    /// ìƒˆì˜ ëŠ¥ë ¥
     /// </summary>
     /// <param name="time"></param>
     public virtual void BirldAbility(float time)
@@ -88,7 +97,7 @@ public class BirdBase : VelocityBase
     }
 
     /// <summary>
-    /// ¼¼ÆÃÇÑÀûÀÌ ¾øÀ¸¸é »õÃÑ¿¡ »õ¸¦ ¼¼ÆÃ
+    /// ì„¸íŒ…í•œì ì´ ì—†ìœ¼ë©´ ìƒˆì´ì— ìƒˆë¥¼ ì„¸íŒ…
     /// </summary>
     void SetBird()
     {
@@ -101,65 +110,26 @@ public class BirdBase : VelocityBase
     }
 
     /// <summary>
-    /// »ç¸Á½Ã È£Ãâ
+    /// ì‚¬ë§ì‹œ í˜¸ì¶œ
     /// </summary>
     public override void Die()
     {
         if (SlingShot.SS.ShottedBird == this && !isSetted)
         {
-            Debug.Log("BirdBase ÀÇ Die()");
+            Debug.Log("BirdBase ì˜ Die()");
 
             SetBird();
         }
-        
+
         base.Die();
     }
 
     #endregion
 
-    #region ÄÚ·çÆ¾
-    /// <summary>
-    /// Á¡¼ö ÅØ½ºÆ® Ç¥½Ã
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator ShowPointTxt()
-    {
-        pointTxt.gameObject.SetActive(true);
-        pointTxt.text = "" + point;
-
-        StageManager.SM.currentScore += point;
-
-        // ·ÎÄÃ ÁÂÇ¥¸¦ ±âÁØÀ¸·Î ½ÃÀÛ À§Ä¡¿Í ¸ñÇ¥ À§Ä¡ ¼³Á¤
-        Vector3 localTxtPos = pointTxt.rectTransform.localPosition;
-        Vector3 localEndPos = txtEndPos.localPosition;
-
-        // ÃÊ±â °Å¸® °è»ê
-        float distance = Vector3.Distance(localTxtPos, localEndPos);
-
-        while (distance > 0.05f)
-        {
-            // Lerp¸¦ »ç¿ëÇÏ¿© Á¡ÁøÀûÀ¸·Î ÀÌµ¿
-            pointTxt.rectTransform.localPosition =
-                Vector3.Lerp(pointTxt.rectTransform.localPosition, localEndPos, txtSpeed * Time.deltaTime);
-
-            // °Å¸® °»½Å
-            distance = Vector3.Distance(pointTxt.rectTransform.localPosition, localEndPos);
-
-            yield return null;
-        }
-
-        // ÃÖÁ¾ À§Ä¡ º¸Á¤
-        pointTxt.rectTransform.localPosition = localEndPos;
-
-        // ÀÌµ¿ÀÌ ³¡³­ ÈÄ 1ÃÊ ´ë±â
-        yield return new WaitForSeconds(1f);
-
-        pointTxt.gameObject.SetActive(false);
-    }
-
+    #region ì½”ë£¨í‹´
 
     /// <summary>
-    /// ¹°¸®ÀÛ¿ë È°¼º
+    /// ë¬¼ë¦¬ì‘ìš© í™œì„±
     /// </summary>
     public void EnAbleVellocity()
     {
@@ -169,12 +139,12 @@ public class BirdBase : VelocityBase
     }
 
     /// <summary>
-    /// ¹°¸®ÀÛ¿ë ºñÈ°¼º
+    /// ë¬¼ë¦¬ì‘ìš© ë¹„í™œì„±
     /// </summary>
     public void DisAbleVellocity() => StartCoroutine(DisAbleColliderCoroutine());
 
     /// <summary>
-    /// ¹°¸®È¿°ú ²ô±â
+    /// ë¬¼ë¦¬íš¨ê³¼ ë„ê¸°
     /// </summary>
     /// <returns></returns>
     public IEnumerator DisAbleColliderCoroutine()
@@ -186,7 +156,7 @@ public class BirdBase : VelocityBase
     }
 
     /// <summary>
-    /// 0.1ÃÊµÚ Hit¸¦ false ·Î ¹Ù²Ş
+    /// 0.1ì´ˆë’¤ Hitë¥¼ false ë¡œ ë°”ê¿ˆ
     /// </summary>
     /// <returns></returns>
     IEnumerator TurnOffHit()

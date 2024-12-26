@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static StageManager instance;
     public static StageManager SM { get { return instance; } set { instance = value; } }
     private void Awake()
@@ -22,11 +22,11 @@ public class StageManager : MonoBehaviour
     }
     #endregion
 
-    #region Á¡¼ö °ü·Ã
+    #region ì ìˆ˜ ê´€ë ¨
     public int highScore;
     public int currentScore;
 
-    [Tooltip("Á¤»ê ¿©ºÎ")]
+    [Tooltip("ì •ì‚° ì—¬ë¶€")]
     public bool adjustmented;
     public int ignoreIdx = -1;
     #endregion
@@ -34,7 +34,7 @@ public class StageManager : MonoBehaviour
     [Space]
     public int birdIdxLength;
     public int BirdCount { get; set; }
-    public int PigCount { get; set; }
+    public int PigCount;
     public bool CanShot { get; set; }
 
     [Space]
@@ -45,7 +45,7 @@ public class StageManager : MonoBehaviour
     public float gameToEndTime;
     private IEnumerator timer;
 
-    #region Ä«¸Ş¶ó ºäÆ÷ÀÎÆ®
+    #region ì¹´ë©”ë¼ ë·°í¬ì¸íŠ¸
     [Space]
     public Transform[] viewPoint;
     public float[] viewTimer;
@@ -53,39 +53,32 @@ public class StageManager : MonoBehaviour
     #endregion
 
     [Space]
-    AudioSource audioSource;
-    public AudioClip[] audioClips;
+    public AudioSource audioSource;
+    public AudioClip[] startAudios;
+    public AudioClip[] adjustAudios;
 
 
-    #region ±âº» ÇÔ¼ö
+    #region ê¸°ë³¸ í•¨ìˆ˜
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        // ºä Æ÷ÀÎÆ® ¼øÈ¸ ÇÏ±â
+        // ë·° í¬ì¸íŠ¸ ìˆœíšŒ í•˜ê¸°
         StartCoroutine(circuitViewPoint());
+        SoundManager.SM.PlayRandomAudio(audioSource, startAudios);
     }
     #endregion
 
 
-    #region ¸¸µç ÇÔ¼ö
+    #region ë§Œë“  í•¨ìˆ˜
 
-    public void PlayRandomAudio(int minIdx, int maxIdx)
-    {
-        int idx = UnityEngine.Random.Range(minIdx, maxIdx);
-        audioSource.PlayOneShot(audioClips[idx]);
-    }
 
-    public void PlayAudio(int idx)
-    {
-        audioSource.PlayOneShot(audioClips[idx]);
-    }
     #endregion
 
 
-    #region ÄÚ·çÆ¾
+    #region ì½”ë£¨í‹´
     public void CheckCount()
     {
-        // Å¸ÀÌ¸Ó°¡ µ¹°íÀÖÀ¸¸é ¸®¼ÂÇÏ°í ´Ù½Ã½ÇÇà
+        // íƒ€ì´ë¨¸ê°€ ëŒê³ ìˆìœ¼ë©´ ë¦¬ì…‹í•˜ê³  ë‹¤ì‹œì‹¤í–‰
         if (onTimer)
         {
             // Debug.Log("StopCoroutine(timer)");
@@ -109,12 +102,14 @@ public class StageManager : MonoBehaviour
         onTimer = true;
         Debug.Log("GameEndTimer()");
 
-        // °ÔÀÓÁ¾·á Ä«¿îÆ® ±â´Ù¸®±â
+        // ê²Œì„ì¢…ë£Œ ì¹´ìš´íŠ¸ ê¸°ë‹¤ë¦¬ê¸°
         yield return new WaitForSeconds(gameToEndTime);
-        Debug.Log("°ÔÀÓ ³¡");
+        Debug.Log("ê²Œì„ ë");
 
+        CanShot = false ;
+        CameraManager.CM.SetTarget(null);
 
-        // Á¤»ê ³¡³¯¶§±îÁö ´ë±â
+        // ì •ì‚° ëë‚ ë•Œê¹Œì§€ ëŒ€ê¸°
         yield return StartCoroutine(AdjustmentScore());
 
         if (PigCount <= 0)
@@ -127,46 +122,43 @@ public class StageManager : MonoBehaviour
                 UIManager.UI.ResultPanel.SetScoreTxt(0, highScore);
             }
             UIManager.UI.ResultPanel.SetText(1, "Level Cleared!");
+            UIManager.UI.ResultPanel.isCleared = true;
         }
-        else // °ÔÀÓ ¿À¹ö
+        else // ê²Œì„ ì˜¤ë²„
         {
             UIManager.UI.ResultPanel.SetText(1, "Game Over!");
+            UIManager.UI.ResultPanel.isCleared = false;
         }
 
-        // ¹°¸®ÀÛ¿ë ¾ø¾Ö±â À§ÇØ ½Ã°£Á¤Áö
+        // ë¬¼ë¦¬ì‘ìš© ì—†ì• ê¸° ìœ„í•´ ì‹œê°„ì •ì§€
         Time.timeScale = 0.0f;
 
-        // °á°ú¿Í »ó°ü¾øÀÌ ÇöÀçÁ¡¼ö Ç¥½Ã
+        // ê²°ê³¼ì™€ ìƒê´€ì—†ì´ í˜„ì¬ì ìˆ˜ í‘œì‹œ
         UIManager.UI.ResultPanel.SetScoreTxt(1, currentScore);
-        UIManager.UI.ResultPanel.gameObject.SetActive(true);
+        UIManager.UI.ResultPanel.EnablePanel();
 
         onTimer = false;
     }
 
     /// <summary>
-    /// Á¡¼ö Á¤»ê
+    /// ì ìˆ˜ ì •ì‚°
     /// </summary>
     IEnumerator AdjustmentScore()
     {
-        Debug.Log("Á¤»ê ½ÃÀÛ");
+        SoundManager.SM.PlayRandomAudio(audioSource, adjustAudios);
+        Debug.Log("ì •ì‚° ì‹œì‘");
 
-        for (int i = 0; i < birdIdxLength; i++)
+        foreach (BirdBase bird in SlingShot.SS.birds)
         {
-            // Debug.Log($"{i}¹øÂ° ½ÃÀÛ, ¹è¿­ Å©±â : {BirdCount}, {ignoreIdx}¹øÂ° ±îÁö ¹«½Ã");
-            if (i <= ignoreIdx)
-            {
-                // Debug.Log($"{i}¹øÂ° ´Â ¹«½Ã");
+            if (bird.idx <= ignoreIdx)
                 continue;
-            }
 
-            yield return StartCoroutine(SlingShot.SS.birds[i].ShowPointTxt());
+            yield return StartCoroutine(bird.ShowPointTxt());
         }
-
-        // Debug.Log("Á¤»ê³¡");
     }
 
     /// <summary>
-    /// ºäÆ÷ÀÎÆ® ¼øÈ¸
+    /// ë·°í¬ì¸íŠ¸ ìˆœíšŒ
     /// </summary>
     /// <returns></returns>
     IEnumerator circuitViewPoint()
@@ -176,7 +168,7 @@ public class StageManager : MonoBehaviour
 
         while (idx < viewPoint.Count())
         {
-            Debug.Log("ºäÆ÷ÀÎÆ® ¼¼ÆÃ");
+            Debug.Log("ë·°í¬ì¸íŠ¸ ì„¸íŒ…");
 
             CameraManager.CM.maxDistance = viewLength;
             CameraManager.CM.SetTarget(viewPoint[idx]);
@@ -188,8 +180,8 @@ public class StageManager : MonoBehaviour
         CameraManager.CM.SetTarget(null);
         CameraManager.CM.maxDistance = maxDis;
 
-        SlingShot.SS.SetBird();
         CanShot = true;
+        SlingShot.SS.SetBird();
     }
     #endregion
 }

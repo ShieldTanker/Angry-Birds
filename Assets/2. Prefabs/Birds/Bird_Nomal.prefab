@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: -9186736782456084030}
   - component: {fileID: 9036667806458213504}
   m_Layer: 9
-  m_Name: Bird_0
+  m_Name: Bird_Nomal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,9 +85,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c44e210f96ec9bd4fa5683913b59251c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Hit: 0
   point: 1000
   destroyTime: 0
   resistance: 2
+  soundResistance: 2
+  pointTxt: {fileID: 5062509340313486356}
+  endDistance: 1.4
+  txtSpeed: 2
+  showTxtTime: 0.5
+  audioSource: {fileID: 0}
+  hitAudioClips:
+  - {fileID: 8300000, guid: 57e7cc0fbb3d48143b9a30d7170492ef, type: 3}
+  - {fileID: 8300000, guid: 385ee2d4255282c46bb64a1197806373, type: 3}
+  - {fileID: 8300000, guid: 95d511bef60b41e49a3eb9603b329ce5, type: 3}
+  - {fileID: 8300000, guid: 94713c56919143745b5a5d9d92e5de00, type: 3}
+  dieAudioClips:
+  - {fileID: 8300000, guid: c25824e02267f0344b9f422966ec3791, type: 3}
+  flyAudioClip: {fileID: 8300000, guid: 2be6d7e1715f94143aa6e98abb5f842d, type: 3}
+  selectedAudioClip: {fileID: 8300000, guid: 92f43a242c3bdd541acd156c4edeaa0d, type: 3}
   currentSpeed: 0
   power: 2
   idx: 0
@@ -97,10 +113,6 @@ MonoBehaviour:
   usedAbility: 0
   abilityTime: 0
   isSetted: 0
-  Hit: 0
-  txtEndPos: {fileID: 0}
-  pointTxt: {fileID: 5062509340313486356}
-  txtSpeed: 2
 --- !u!212 &565119806629846969
 SpriteRenderer:
   m_ObjectHideFlags: 0

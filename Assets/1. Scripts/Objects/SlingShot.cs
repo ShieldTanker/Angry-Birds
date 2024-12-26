@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class SlingShot : MonoBehaviour
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static SlingShot instance;
     public static SlingShot SS { get { return instance; } set { instance = value; } }
     private void Awake()
@@ -22,7 +22,7 @@ public class SlingShot : MonoBehaviour
     public float stringSpeed;
     public float linePower;
 
-    #region °í¹«ÁÙ À§Ä¡°ª
+    #region ê³ ë¬´ì¤„ ìœ„ì¹˜ê°’
     public LineRenderer lineRenderer;
     public Transform lineTarget;
 
@@ -42,7 +42,8 @@ public class SlingShot : MonoBehaviour
     public float settingSpeed;
     int currentIdx;
 
-    AudioSource audioSource;
+    public AudioSource audioSource;
+    public AudioClip audioClip;
     public AudioClip[] audioClips;
 
     private void Start()
@@ -56,7 +57,7 @@ public class SlingShot : MonoBehaviour
 
         currentIdx = 0;
 
-        // ½ºÅ×ÀÌÁöº° »õ ¹èÄ¡
+        // ìŠ¤í…Œì´ì§€ë³„ ìƒˆ ë°°ì¹˜
         for (int i = 0; i < birds.Count; i++)
         {
             int idx = i;
@@ -72,7 +73,7 @@ public class SlingShot : MonoBehaviour
 
     private void Update()
     {
-        // ´ÙÀ½ ¹ß»çÃ¼°¡ µÉ »õ°¡ ÀÖÀ»°æ¿ì °í¹«ÁÙ Áß°£À§Ä¡¸¦ ´ÙÀ½ ¹ß»çÃ¼¿¡ À§Ä¡·Î ÇÒ´ç
+        // ë‹¤ìŒ ë°œì‚¬ì²´ê°€ ë  ìƒˆê°€ ìˆì„ê²½ìš° ê³ ë¬´ì¤„ ì¤‘ê°„ìœ„ì¹˜ë¥¼ ë‹¤ìŒ ë°œì‚¬ì²´ì— ìœ„ì¹˜ë¡œ í• ë‹¹
         if (birdTarget != null)
             lineRenderer.SetPosition(1, birdTarget.transform.position);
         
@@ -92,32 +93,33 @@ public class SlingShot : MonoBehaviour
 
     public void Shot(Vector3 dir, float power)
     {
-        // ¹°¸®ÀÛ¿ë È°¼º
+        // ë¬¼ë¦¬ì‘ìš© í™œì„±
         birdTarget.EnAbleVellocity();
         birdTarget.rb.AddForce(dir * power, ForceMode2D.Impulse);
         linePower = power;
 
-        SoundManager.SM.PlayRandomAudio(audioSource, audioClips, 1, 3);
+        SoundManager.SM.PlayRandomAudio(audioSource, audioClips);
+        SoundManager.SM.PlayAudio(birdTarget.audioSource, birdTarget.flyAudioClip);
 
         StageManager.SM.BirdCount--;
         StageManager.SM.ignoreIdx++;
         StageManager.SM.CheckCount();
     }
 
-    #region ÄÚ·çÆ¾
+    #region ì½”ë£¨í‹´
     public void SetBird()
     {
-        // ÇöÀç ÀÎµ¦½º°¡ »õµéÀÇ ÃÑ·®À» ³Ñ¾î¼³¶§ ¸®ÅÏ
-        if (currentIdx >= birds.Count)
+        // í˜„ì¬ ì¸ë±ìŠ¤ê°€ ìƒˆë“¤ì˜ ì´ëŸ‰ì„ ë„˜ì–´ì„¤ë•Œ ë¦¬í„´
+        if (currentIdx >= birds.Count || !StageManager.SM.CanShot)
             return;
 
-        // Ä«¸Ş¶óÀÇ Å¸°ÙÀ» ÃÊ±âÈ­
+        // ì¹´ë©”ë¼ì˜ íƒ€ê²Ÿì„ ì´ˆê¸°í™”
         CameraManager.CM.SetTarget(null);
         StartCoroutine(SetBirdCoroutine());
     }
 
     /// <summary>
-    /// ´ÙÀ½ ¹ß»çÇÒ »õ¸¦ ¼¼ÆÃ
+    /// ë‹¤ìŒ ë°œì‚¬í•  ìƒˆë¥¼ ì„¸íŒ…
     /// </summary>
     /// <returns></returns>
     IEnumerator SetBirdCoroutine()
@@ -125,6 +127,8 @@ public class SlingShot : MonoBehaviour
         isShoted = false;
 
         yield return new WaitForSeconds(1f);
+
+        SoundManager.SM.PlayAudio(birds[currentIdx].audioSource, birds[currentIdx].selectedAudioClip);
 
         float distance = Vector3.Distance(birds[currentIdx].transform.position, middlePos.position);
 
@@ -150,7 +154,7 @@ public class SlingShot : MonoBehaviour
     }
 
     /// <summary>
-    /// °í¹«ÁÙ À§Ä¡ ÃÊ±âÈ­
+    /// ê³ ë¬´ì¤„ ìœ„ì¹˜ ì´ˆê¸°í™”
     /// </summary>
     /// <returns></returns>
     IEnumerator ReturnRubberBand()

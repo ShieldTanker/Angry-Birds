@@ -1,10 +1,11 @@
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static SoundManager instance;
     public static SoundManager SM { get { return instance; } set { instance = value; } }
 
@@ -18,7 +19,6 @@ public class SoundManager : MonoBehaviour
     #endregion
 
     public List<AudioSource> audioSources = new List<AudioSource>();
-
     public void SetVolume(float volumeScale)
     {
         GameManager.GM.SetVolumeScale(volumeScale);
@@ -30,24 +30,30 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ·£´ı ¿Àµğ¿ÀÀç»ı
+    /// ëœë¤ ì˜¤ë””ì˜¤ ì¬ìƒ
     /// </summary>
     /// <param name="source"></param>
     /// <param name="clips"></param>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    public void PlayRandomAudio(AudioSource source, AudioClip[] clips, int min, int max)
+    public void PlayRandomAudio(AudioSource source, AudioClip[] clips)
     {
-        if(max >= clips.Length)
-            max = clips.Length - 1;
+        if (source == null || clips.Length <= 0)
+            return;
         
-        int idx = Random.Range(min, max);
+        int idx = UnityEngine.Random.Range(0, clips.Length);
 
         PlayAudio(source, clips[idx]);
     }
 
+    /// <summary>
+    /// í•´ë‹¹ ì˜¤ë””ì˜¤ í´ë¦½ ì¬ìƒ
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="clip"></param>
     public virtual void PlayAudio(AudioSource source, AudioClip clip)
     {
+        if (source == null || clip == null)
+             return;
+
         source.PlayOneShot(clip);
     }
 }

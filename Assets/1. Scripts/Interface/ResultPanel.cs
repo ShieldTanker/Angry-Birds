@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using TMPro;
@@ -6,26 +6,49 @@ using UnityEngine;
 
 public class ResultPanel : MonoBehaviour
 {
+    public GameObject panel;
+
     public TMP_Text stageNameTxt;
     public TMP_Text clearedResultTxt;
 
-    public TMP_Text highScoreTxt;
-    public TMP_Text currentScoreTxt;
+    public TMP_Text highScorePointTxt;
+    public TMP_Text currentScorePointTxt;
+
+    public AudioSource audioSource;
+    public AudioClip[] clearClips;
+    public AudioClip[] failedClips;
+    public bool isCleared;
 
     public int highScore;
     public int currentScore;
 
-    void Start()
+    private void Start()
     {
         Debug.Log("Pannel Setted");
         UIManager.UI.ResultPanel = this;
 
         highScore = StageManager.SM.highScore;
-        highScoreTxt.text = "" + highScore;
+        highScorePointTxt.text = "" + highScore;
+        panel.SetActive(false);
+    }
+
+    public void EnablePanel()
+    {
+        panel.SetActive(true);
+
+        if (isCleared)
+            SoundManager.SM.PlayRandomAudio(audioSource, clearClips);
+        else
+            SoundManager.SM.PlayRandomAudio(audioSource, failedClips);
+    }
+
+    public void DisAblePanel()
+    {
+        panel.SetActive(false);
     }
 
     /// <summary>
-    /// 0 : ÃÖ°í Á¡¼ö, 1 : ÇöÀç Á¡¼ö
+    /// 0 : ìµœê³  ì ìˆ˜, 1 : í˜„ì¬ ì ìˆ˜
     /// </summary>
     /// <param name="idx"></param>
     /// <param name="score"></param>
@@ -34,17 +57,18 @@ public class ResultPanel : MonoBehaviour
         switch (idx)
         {
             case 0:
-                highScoreTxt.text = "" + score;
+                highScorePointTxt.text = "" + score;
                 break;
             case 1:
-                currentScoreTxt.text = "" + score;
+                currentScorePointTxt.text = "" + score;
                 break;
             default:
                 break;
         }
     }
+
     /// <summary>
-    /// 0 : ½ºÅ×ÀÌÁö ÀÌ¸§, 1 : ·¹º§ Å¬¸®¾î ÅØ½ºÆ®
+    /// 0 : ìŠ¤í…Œì´ì§€ ì´ë¦„, 1 : ë ˆë²¨ í´ë¦¬ì–´ í…ìŠ¤íŠ¸
     /// </summary>
     /// <param name="idx"></param>
     /// <param name="text"></param>
@@ -59,7 +83,8 @@ public class ResultPanel : MonoBehaviour
                 clearedResultTxt.text = text;
                 break;
 
-            default: Debug.Log("ÀÎµ¦½º ¹üÀ§ ÃÊ°ú");
+            default:
+                Debug.Log("ì¸ë±ìŠ¤ ë²”ìœ„ ì´ˆê³¼");
                 break;
         }
     }

@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 775338303581660769}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 21.4, y: 4, z: -5}
+  m_LocalPosition: {x: 6.92, y: 7.31, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -78,19 +78,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1689f70491b84ce4aa736bdfd3195da9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highScore: 0
+  currentScore: 0
+  adjustmented: 0
+  ignoreIdx: -1
   birdIdxLength: 0
-  resultPannel: {fileID: 0}
+  PigCount: 0
   stageName: 1 - 1
   onTimer: 0
   gameToEndTime: 5
-  audioClips: []
-  highScore: 0
-  currentScore: 0
-  ignoreIdx: -1
-  adjustmented: 0
-  viewPoint: []
-  viewTimer: []
+  viewPoint:
+  - {fileID: 8307699500323325856}
+  - {fileID: 7050079497166448942}
+  viewTimer:
+  - 2
+  - 2
   viewLength: 40
+  audioSource: {fileID: 1440245168849915763}
+  startAudios:
+  - {fileID: 8300000, guid: cd1244fc517b3a54680dffc8ec1b1c1b, type: 3}
+  - {fileID: 8300000, guid: 39790b29f8a69db4f9ad8a45f2842372, type: 3}
+  adjustAudios:
+  - {fileID: 8300000, guid: cd1244fc517b3a54680dffc8ec1b1c1b, type: 3}
+  - {fileID: 8300000, guid: 39790b29f8a69db4f9ad8a45f2842372, type: 3}
 --- !u!82 &1440245168849915763
 AudioSource:
   m_ObjectHideFlags: 0
@@ -212,7 +222,7 @@ Transform:
   m_GameObject: {fileID: 2561150167646021924}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.59, y: 4, z: -5}
+  m_LocalPosition: {x: 7.14, y: 1.03, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static InputManager instance;
     public static InputManager IM { get { return instance; } set { instance = value; } }
     private void Awake()
@@ -37,21 +37,26 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
    
     public void OnPointerDown(PointerEventData eventData)
     {
-        // ¹ß»çÇÑ »õ°¡ null ÀÌ ¾Æ´Ï°í, hit µÇÁö ¾Ê¾ÒÀ¸¸ç, ´É·Â »ç¿ë ¾ÈÇßÀ»¶§
+        // ë°œì‚¬í•œ ìƒˆê°€ null ì´ ì•„ë‹ˆê³ , hit ë˜ì§€ ì•Šì•˜ìœ¼ë©°, ëŠ¥ë ¥ ì‚¬ìš© ì•ˆí–ˆì„ë•Œ
         if (SlingShot.SS.ShottedBird != null && !SlingShot.SS.ShottedBird.Hit && !SlingShot.SS.ShottedBird.usedAbility)
         {
             SlingShot.SS.ShottedBird.BirldAbility(0f);
         }
-        
+
+        if (!SlingShot.SS.isShoted)
+        {
+            SoundManager.SM.PlayAudio(SlingShot.SS.audioSource, SlingShot.SS.audioClip);
+        }
+
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0; // Ä«¸Ş¶ó¿ÍÀÇ °Å¸® ¼³Á¤
+        mousePos.z = 0; // ì¹´ë©”ë¼ì™€ì˜ ê±°ë¦¬ ì„¤ì •
 
         dragStart = mousePos;
 
         Vector3 dir = mousePos - dragStart;
         dragEnd = SlingShot.SS.middlePos.position + dir;
 
-        // Å×½ºÆ®¿ë ¿ÀºêÁ§Æ® ¹èÄ¡
+        // í…ŒìŠ¤íŠ¸ìš© ì˜¤ë¸Œì íŠ¸ ë°°ì¹˜
         go1.transform.position = dragStart;
         go2.transform.position = dragEnd;
     }
@@ -61,14 +66,14 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
         if (SlingShot.SS.birdTarget == null || !StageManager.SM.CanShot)
             return;
 
-        // ¸¶¿ì½º ÂïÀº À§Ä¡(³¡Á¡)
+        // ë§ˆìš°ìŠ¤ ì°ì€ ìœ„ì¹˜(ëì )
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
 
-        // ¸¶¿ì½º ½ÃÀÛÁ¡¿¡¼­ ¸¶¿ì½º ÂïÀº À§Ä¡·Î ¹æÇâ ±¸ÇÏ±â
+        // ë§ˆìš°ìŠ¤ ì‹œì‘ì ì—ì„œ ë§ˆìš°ìŠ¤ ì°ì€ ìœ„ì¹˜ë¡œ ë°©í–¥ êµ¬í•˜ê¸°
         Vector3 dir = mousePos - dragStart;
 
-        // ¸¶¿ì½º ½ÃÀÛÀ§Ä¡¿¡ ¿ÀºêÁ§Æ® »ı¼º(½ÃÀÛÁ¡ ¾Ë±âÀ§ÇÔ)
+        // ë§ˆìš°ìŠ¤ ì‹œì‘ìœ„ì¹˜ì— ì˜¤ë¸Œì íŠ¸ ìƒì„±(ì‹œì‘ì  ì•Œê¸°ìœ„í•¨)
         go2.transform.position = mousePos;
 
         float dist = Mathf.Clamp(dir.magnitude, -SlingShot.SS.maxLine, SlingShot.SS.maxLine);
@@ -83,10 +88,10 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
         if (SlingShot.SS.birdTarget == null || SlingShot.SS.isShoted || !StageManager.SM.CanShot)
             return;
 
-        // ¹æÇâ ¼³Á¤
+        // ë°©í–¥ ì„¤ì •
         Vector3 dir = SlingShot.SS.middlePos.position - dragEnd;
 
-        // ³¯¸®´Â Èû ¼³Á¤
+        // ë‚ ë¦¬ëŠ” í˜ ì„¤ì •
         float power = dir.magnitude * SlingShot.SS.birdTarget.power * 2;
 
         SlingShot.SS.birdTarget.Hit = false;
