@@ -8,14 +8,19 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class ObjectBase : MonoBehaviour
 {
     [NonSerialized] public Rigidbody2D rb;
+    public Sprite idleSprite;
+    public Sprite hitSprite;
+
     [NonSerialized] public Collider2D col;
     [NonSerialized] public SpriteRenderer spriteRenderer;
-    [SerializeField] public bool Hit;
+    public bool Hit { get; set; }
 
     [NonSerialized] public float prevMagnitude;
     
     [Header("VelocityBase"), Tooltip("점수")]
     public int point;
+
+    public float otherSpeed;
 
     public float destroyTime;
     public float resistance;
@@ -27,7 +32,6 @@ public class ObjectBase : MonoBehaviour
     public float txtSpeed;
     public float showTxtTime;
 
-    public AudioSource audioSource;
     public AudioClip[] hitAudioClips;
     public AudioClip[] dieAudioClips;
 
@@ -37,8 +41,6 @@ public class ObjectBase : MonoBehaviour
         col = GetComponent<Collider2D>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-        audioSource = GetComponent<AudioSource>();
-
     }
 
     void FixedUpdate()
@@ -89,29 +91,52 @@ public class ObjectBase : MonoBehaviour
         pointTxt.gameObject.SetActive(false);
     }
 
+    public void SetIdleImage()
+    {
+        spriteRenderer.sprite = idleSprite;
+    }
+
+    public void HitCoroutineStart() => StartCoroutine(HitCoroutine());
+    IEnumerator HitCoroutine()
+    {
+        if (hitSprite != null)
+        {
+            spriteRenderer.sprite = hitSprite;
+            yield return new WaitForSeconds(0.2f);
+            SetIdleImage();
+        }
+    }
+
     public virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        float otherSpeed = 0;
-        float speed = prevMagnitude;
+        LoadCollisonMagnitude(collision);
 
+        // 자신의 속도 or 상대의 속도가 제한속도 이상일때
+        if (prevMagnitude >= resistance || otherSpeed >= resistance)
+            Die();
+        else if (prevMagnitude >= soundResistance || otherSpeed >= soundResistance)
+        {
+            SoundManager.SM.PlayRandomAudio(hitAudioClips);
+        }
+    }
+
+    /// <summary>
+    /// 상대방의 속도 가져오기
+    /// </summary>
+    /// <param name="collision"></param>
+    public void LoadCollisonMagnitude(Collision2D collision)
+    {
         if (collision.gameObject.GetComponent<ObjectBase>())
         {
             ObjectBase otherRb = collision.gameObject.GetComponent<ObjectBase>();
             otherSpeed = otherRb.prevMagnitude;
         }
-
-        // 자신의 속도 or 상대의 속도가 제한속도 이상일때
-        if (speed >= resistance || otherSpeed >= resistance)
-            Die();
-        else if (speed >= soundResistance || otherSpeed >= soundResistance)
-        {
-            SoundManager.SM.PlayRandomAudio(audioSource, hitAudioClips);
-        }
     }
+
 
     public virtual void Die()
     {
-        SoundManager.SM.PlayRandomAudio(audioSource, dieAudioClips);
+        SoundManager.SM.PlayRandomAudio(dieAudioClips);
         
         spriteRenderer.enabled = false;
         col.enabled = false;

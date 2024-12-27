@@ -18,6 +18,8 @@ public class SoundManager : MonoBehaviour
     }
     #endregion
 
+    public AudioSource audioSource;
+
     public List<AudioSource> audioSources = new List<AudioSource>();
     public void SetVolume(float volumeScale)
     {
@@ -41,7 +43,17 @@ public class SoundManager : MonoBehaviour
         
         int idx = UnityEngine.Random.Range(0, clips.Length);
 
-        PlayAudio(source, clips[idx]);
+        PlayAudio(clips[idx]);
+    }
+
+    public void PlayRandomAudio(AudioClip[] clips)
+    {
+        if (audioSource == null || clips.Length <= 0)
+            return;
+
+        int idx = UnityEngine.Random.Range(0, clips.Length);
+
+        PlayAudio(clips[idx]);
     }
 
     /// <summary>
@@ -52,8 +64,16 @@ public class SoundManager : MonoBehaviour
     public virtual void PlayAudio(AudioSource source, AudioClip clip)
     {
         if (source == null || clip == null)
-             return;
+            return;
 
         source.PlayOneShot(clip);
+    }
+
+    public virtual void PlayAudio(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+            return;
+
+        audioSource.PlayOneShot(clip);
     }
 }

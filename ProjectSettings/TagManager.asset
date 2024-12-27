@@ -15,7 +15,7 @@ TagManager:
   - Obstacle
   - Pig
   - Bird
-  - 
+  - BirdsAbility
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: SlingShot0
+    uniqueID: 2209114019
+    locked: 0
+  - name: Bird
+    uniqueID: 1947855889
+    locked: 0
+  - name: SlingShot1
+    uniqueID: 4101807113
+    locked: 0
+  - name: Objects
+    uniqueID: 391604489
     locked: 0

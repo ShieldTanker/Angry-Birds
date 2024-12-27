@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    #region ½Ì±ÛÅæ
+    #region ì‹±ê¸€í†¤
     static GameManager instance;
     public static GameManager GM { get { return instance; } set { instance = value; } }
     private void Awake()
@@ -19,7 +19,9 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    #region ¾À °ü·Ã
+    public bool GamePause {  get; private set; }
+
+    #region ì”¬ ê´€ë ¨
     string sceneName;
     public string SceneName
     {
@@ -29,32 +31,36 @@ public class GameManager : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
+        ResumeGame();
         SceneManager.LoadScene(sceneName);
     }
 
     public void RestartScene()
     {
+        ResumeGame();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     #endregion
 
-    #region ½Ã°£ °ü·Ã
+    #region ì‹œê°„ ê´€ë ¨
     public void PauseGame()
     {
+        GamePause = true;
         Time.timeScale = 0;
     }
 
     public void ResumeGame()
     {
+        GamePause = false;
         Time.timeScale = 1;
     }
     #endregion
 
-    #region ¼Ò¸® °ü·Ã
+    #region ì†Œë¦¬ ê´€ë ¨
     public float volumeScale;
 
     /// <summary>
-    /// º¼·ý°ª ÀúÀå
+    /// ë³¼ë¥¨ê°’ ì €ìž¥
     /// </summary>
     public void SetVolumeScale(float volumeScale)
     {
@@ -63,7 +69,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// º¼·ý°ª ºÒ·¯¿À±â
+    /// ë³¼ë¥¨ê°’ ë¶ˆëŸ¬ì˜¤ê¸°
     /// </summary>
     public void LoadVolumeScale()
     {

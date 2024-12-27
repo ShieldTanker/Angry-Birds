@@ -24,7 +24,6 @@ public class ResultPanel : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Pannel Setted");
         UIManager.UI.ResultPanel = this;
 
         highScore = StageManager.SM.highScore;
@@ -37,14 +36,19 @@ public class ResultPanel : MonoBehaviour
         panel.SetActive(true);
 
         if (isCleared)
-            SoundManager.SM.PlayRandomAudio(audioSource, clearClips);
+            // SoundManager.SM.PlayRandomAudio(audioSource, clearClips);
+            SoundManager.SM.PlayRandomAudio(clearClips);
         else
-            SoundManager.SM.PlayRandomAudio(audioSource, failedClips);
+            // SoundManager.SM.PlayRandomAudio(audioSource, failedClips);
+            SoundManager.SM.PlayRandomAudio(failedClips);
+
+        GameManager.GM.PauseGame();
     }
 
     public void DisAblePanel()
     {
         panel.SetActive(false);
+        GameManager.GM.ResumeGame();
     }
 
     /// <summary>

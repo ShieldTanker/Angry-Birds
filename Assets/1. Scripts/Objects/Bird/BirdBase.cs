@@ -10,11 +10,20 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class BirdBase : ObjectBase
 {
     [Header("BirdBase")]
+    public Sprite flySprite;
+    public Sprite abilitiedImage;
+
+    [Space]
     public AudioClip flyAudioClip;
     public AudioClip selectedAudioClip;
+    public AudioClip abilityAudioClip;
 
+    [Space]
     public float currentSpeed;
     public float power;
+    public float abilityPower;
+    public float abilityLength;
+    public float abilityTime;
     public int idx;
 
     [Space]
@@ -24,7 +33,6 @@ public class BirdBase : ObjectBase
 
     [Space]
     public bool usedAbility;
-    public float abilityTime;
 
     [SerializeField] bool isSetted;
 
@@ -49,51 +57,65 @@ public class BirdBase : ObjectBase
         if (SlingShot.SS.ShottedBird != this || isSetted)
             return;
 
-        if (Hit == true)
+        if (Hit)
         {
             stopTime = true;
 
-            // 일정속도 이하이면 남은시간 이어 재생
             if (rb.velocity.magnitude <= resistance)
-                stopTime = false;
+                SetBird();
         }
 
         if (!stopTime)
         {
-            currentTime += Time.deltaTime;
-
             if (currentTime >= initTime)
                 SetBird();
+
+            currentTime += Time.deltaTime;
         }
     }
 
     public override void OnCollisionEnter2D(Collision2D collision)
     {
-        Hit = true;
-
-        float otherSpeed = 0;
-        float speed = prevMagnitude;
-        
-        if (collision.gameObject.GetComponent<ObjectBase>())
-        {
-            ObjectBase otherRb = collision.gameObject.GetComponent<ObjectBase>();
-            otherSpeed = otherRb.prevMagnitude;
-        }
-
-        if (speed >= soundResistance || otherSpeed >= soundResistance)
-            SoundManager.SM.PlayRandomAudio(audioSource, hitAudioClips);
+        // BirdBase 는 안쓰는 함수라서 빈코드로 덮어씌움
     }
+
+    /*    public void OnCollisionEnter2D(Collision2D collision)
+        {
+            Hit = true;
+            SetIdleImage();
+            base.CalcCollision(collision);
+
+            if (prevMagnitude >= soundResistance || otherSpeed >= soundResistance)
+            {
+                HitCoroutineStart();
+                // SoundManager.SM.PlayRandomAudio(audioSource, hitAudioClips);
+                SoundManager.SM.PlayRandomAudio(hitAudioClips);
+            }
+        }*/
     #endregion
 
     #region 만든 함수
+
+    public void SetFlyImage()
+    {
+        spriteRenderer.sprite = flySprite;
+    }
 
     /// <summary>
     /// 새의 능력
     /// </summary>
     /// <param name="time"></param>
-    public virtual void BirldAbility(float time)
+    public virtual void BirldAbility()
     {
+        if (usedAbility)
+            return;
+
         usedAbility = true;
+
+        if (abilitiedImage != null)
+            spriteRenderer.sprite = abilitiedImage;
+
+        SoundManager.SM.PlayAudio(abilityAudioClip);
     }
 
     /// <summary>
@@ -135,6 +157,8 @@ public class BirdBase : ObjectBase
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
         col.enabled = true;
+        rb.simulated = true;
+
         StartCoroutine(TurnOffHit());
     }
 
@@ -150,9 +174,16 @@ public class BirdBase : ObjectBase
     public IEnumerator DisAbleColliderCoroutine()
     {
         yield return new WaitForSeconds(0.5f);
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.bodyType = RigidbodyType2D.Static;
+
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        rb.simulated = false;
         col.enabled = false;
-        StartCoroutine(TurnOffHit());
+
+        Hit = false;
+        // StartCoroutine(TurnOffHit());
     }
 
     /// <summary>

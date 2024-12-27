@@ -17,6 +17,8 @@ public class CameraManager : MonoBehaviour
             Destroy(gameObject);
     }
     #endregion
+    Camera cam;
+    public float nomalCamSize;
 
     private Vector3 originPos;
     public Vector3 offset = Vector3.zero;
@@ -32,6 +34,12 @@ public class CameraManager : MonoBehaviour
     {
         targetLayer = LayerMask.NameToLayer("Bird");
         StartFollowing(); // 카메라 코루틴 시작
+        cam = GetComponent<Camera>();
+    }
+
+    public void SetCameraSize(float length)
+    {
+        cam.orthographicSize = nomalCamSize + length;
     }
 
     /// <summary>

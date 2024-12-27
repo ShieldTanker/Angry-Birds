@@ -37,15 +37,19 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
    
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (GameManager.GM.GamePause)
+            return;
+
         // 발사한 새가 null 이 아니고, hit 되지 않았으며, 능력 사용 안했을때
         if (SlingShot.SS.ShottedBird != null && !SlingShot.SS.ShottedBird.Hit && !SlingShot.SS.ShottedBird.usedAbility)
         {
-            SlingShot.SS.ShottedBird.BirldAbility(0f);
+            SlingShot.SS.ShottedBird.BirldAbility();
         }
 
         if (!SlingShot.SS.isShoted)
         {
-            SoundManager.SM.PlayAudio(SlingShot.SS.audioSource, SlingShot.SS.audioClip);
+            // SoundManager.SM.PlayAudio(SlingShot.SS.audioSource, SlingShot.SS.audioClip);
+            SoundManager.SM.PlayAudio(SlingShot.SS.audioClip);
         }
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -63,6 +67,9 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (GameManager.GM.GamePause)
+            return;
+
         if (SlingShot.SS.birdTarget == null || !StageManager.SM.CanShot)
             return;
 
@@ -77,26 +84,31 @@ public class InputManager : MonoBehaviour, IDragHandler, IPointerUpHandler, IPoi
         go2.transform.position = mousePos;
 
         float dist = Mathf.Clamp(dir.magnitude, -SlingShot.SS.maxLine, SlingShot.SS.maxLine);
-        dragEnd = SlingShot.SS.middlePos.position + dir.normalized * dist;
+        dir = dir.normalized * dist;
 
+        dragEnd = SlingShot.SS.middlePos.position + dir;
+        
+        CameraManager.CM.SetCameraSize(Mathf.Abs(dist));
+
+        SlingShot.SS.Trajecotory(dir);
         SlingShot.SS.lineRenderer.SetPosition(1, dragEnd);
         SlingShot.SS.birdTarget.transform.position = dragEnd;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (GameManager.GM.GamePause)
+            return;
+
         if (SlingShot.SS.birdTarget == null || SlingShot.SS.isShoted || !StageManager.SM.CanShot)
             return;
 
         // 방향 설정
         Vector3 dir = SlingShot.SS.middlePos.position - dragEnd;
 
-        // 날리는 힘 설정
-        float power = dir.magnitude * SlingShot.SS.birdTarget.power * 2;
-
         SlingShot.SS.birdTarget.Hit = false;
-
-        SlingShot.SS.Shot(dir, power);
+        SlingShot.SS.Shot(dir);
+        CameraManager.CM.SetCameraSize(0);
 
         SettingBird();
     }

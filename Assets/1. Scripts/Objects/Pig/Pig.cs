@@ -17,7 +17,7 @@ public class Pig : ObstacleBase
             return;
 
         StageManager.SM.PigCount--;
-        SoundManager.SM.PlayRandomAudio(audioSource, dieAudioClips);
+        SoundManager.SM.PlayRandomAudio(dieAudioClips);
         base.Die();
     }
 }

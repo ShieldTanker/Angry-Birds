@@ -17,7 +17,13 @@ public class SlingShot : MonoBehaviour
     }
     #endregion
 
+    public float drawPerTime;
+    public GameObject trajectObject;
+    public List<GameObject> trajectObjects;
+    public int trajectCount;
+    public float mass;
 
+    [Space]
     public float maxLine;
     public float stringSpeed;
     public float linePower;
@@ -69,10 +75,15 @@ public class SlingShot : MonoBehaviour
             birds[idx].name = "Bird" + idx;
             birds[idx].DisAbleVellocity();
         }
+
+        InitTrajectObject();
     }
 
     private void Update()
     {
+        if (GameManager.GM.GamePause)
+            return;
+
         // 다음 발사체가 될 새가 있을경우 고무줄 중간위치를 다음 발사체에 위치로 할당
         if (birdTarget != null)
             lineRenderer.SetPosition(1, birdTarget.transform.position);
@@ -91,19 +102,67 @@ public class SlingShot : MonoBehaviour
         }
     }
 
-    public void Shot(Vector3 dir, float power)
+    public void Shot(Vector3 dir)
     {
         // 물리작용 활성
         birdTarget.EnAbleVellocity();
-        birdTarget.rb.AddForce(dir * power, ForceMode2D.Impulse);
-        linePower = power;
+        float power = dir.magnitude * birdTarget.power * 2;
 
-        SoundManager.SM.PlayRandomAudio(audioSource, audioClips);
-        SoundManager.SM.PlayAudio(birdTarget.audioSource, birdTarget.flyAudioClip);
+        Vector3 force = dir * power;
+        birdTarget.rb.AddForce(dir * power, ForceMode2D.Impulse);
+        birdTarget.SetFlyImage();
+
+        linePower = birdTarget.power;
+        
+        TurnOffTraject();
+
+        // 새총 발사소리
+        // SoundManager.SM.PlayRandomAudio(audioSource, audioClips);
+        SoundManager.SM.PlayRandomAudio(audioClips);
+
+        // 새가 날때 소리
+        // SoundManager.SM.PlayAudio(birdTarget.audioSource, birdTarget.flyAudioClip);
+        SoundManager.SM.PlayAudio(birdTarget.flyAudioClip);
 
         StageManager.SM.BirdCount--;
         StageManager.SM.ignoreIdx++;
         StageManager.SM.CheckCount();
+    }
+
+    public void Trajecotory(Vector3 dir)
+    {
+        float power = dir.magnitude * birdTarget.power * 2;
+        Vector3 velocity = -dir * power / mass;        // 초기 속도(V0) 방향벡터 / 질량 
+
+        Vector3 pos = birdTarget.transform.position;
+
+        for (int i = 0; i < trajectCount; i++)
+        {
+            float t = drawPerTime * i;
+            Vector3 trajetPos = pos + velocity * t + 0.5f * Physics.gravity * (t * t);
+
+            trajectObjects[i].gameObject.SetActive(true);
+            trajectObjects[i].transform.position = trajetPos;
+        }
+    }
+
+    void InitTrajectObject()
+    {
+        for(int i = 0; i < trajectCount; i++)
+        {
+            GameObject go = Instantiate(trajectObject);
+            trajectObjects.Add(go);
+
+            trajectObjects[i].SetActive(false);
+        }
+    }
+
+    public void TurnOffTraject()
+    {
+        foreach (GameObject traject in trajectObjects)
+        {
+            traject.SetActive(false);
+        }
     }
 
     #region 코루틴
@@ -128,7 +187,8 @@ public class SlingShot : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        SoundManager.SM.PlayAudio(birds[currentIdx].audioSource, birds[currentIdx].selectedAudioClip);
+        // SoundManager.SM.PlayAudio(birds[currentIdx].audioSource, birds[currentIdx].selectedAudioClip);
+        SoundManager.SM.PlayAudio(birds[currentIdx].selectedAudioClip);
 
         float distance = Vector3.Distance(birds[currentIdx].transform.position, middlePos.position);
 

@@ -64,7 +64,7 @@ public class StageManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         // 뷰 포인트 순회 하기
         StartCoroutine(circuitViewPoint());
-        SoundManager.SM.PlayRandomAudio(audioSource, startAudios);
+        SoundManager.SM.PlayRandomAudio(startAudios);
     }
     #endregion
 
@@ -81,7 +81,6 @@ public class StageManager : MonoBehaviour
         // 타이머가 돌고있으면 리셋하고 다시실행
         if (onTimer)
         {
-            // Debug.Log("StopCoroutine(timer)");
             StopCoroutine(timer);
             onTimer = false;
         }
@@ -145,7 +144,7 @@ public class StageManager : MonoBehaviour
     /// </summary>
     IEnumerator AdjustmentScore()
     {
-        SoundManager.SM.PlayRandomAudio(audioSource, adjustAudios);
+        SoundManager.SM.PlayRandomAudio(adjustAudios);
         Debug.Log("정산 시작");
 
         foreach (BirdBase bird in SlingShot.SS.birds)
@@ -168,8 +167,6 @@ public class StageManager : MonoBehaviour
 
         while (idx < viewPoint.Count())
         {
-            Debug.Log("뷰포인트 세팅");
-
             CameraManager.CM.maxDistance = viewLength;
             CameraManager.CM.SetTarget(viewPoint[idx]);
 

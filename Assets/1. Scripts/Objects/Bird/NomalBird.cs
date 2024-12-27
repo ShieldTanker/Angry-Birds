@@ -1,23 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NomalBird : BirdBase
 {
-    public override void BirldAbility(float time)
+    public override void BirldAbility()
     {
-        base.BirldAbility(time);
-        Debug.Log($"{gameObject.name}ÀÇ ´É·Â ¹ßµ¿"); 
+        base.BirldAbility();
+        Debug.Log($"{gameObject.name}ì˜ ëŠ¥ë ¥ ë°œë™"); 
     }
-
-    public override void OnCollisionEnter2D(Collision2D collision)
-    {
-        base.OnCollisionEnter2D(collision);
-    }
-
     public override void Die()
     {
-        Debug.Log("Nomal Bird ÀÇ Die()");
+        Debug.Log("Nomal Bird ì˜ Die()");
         base.Die();
     }
 }

@@ -1,12 +1,12 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UIButton : MonoBehaviour
 {
-    #region ¾À °ü·Ã
+    #region ì”¬ ê´€ë ¨
     /// <summary>
-    /// ¾À Àç½ÃÀÛ ¹öÆ°
+    /// ì”¬ ì¬ì‹œì‘ ë²„íŠ¼
     /// </summary>
     public void RestartScene()
     {
@@ -14,7 +14,7 @@ public class UIButton : MonoBehaviour
     }
 
     /// <summary>
-    /// ¾À ºÒ·¯¿À´Â ¹öÆ°
+    /// ì”¬ ë¶ˆëŸ¬ì˜¤ëŠ” ë²„íŠ¼
     /// </summary>
     /// <param name="sceneName"></param>
     public void LoadScene(string sceneName)
@@ -23,29 +23,29 @@ public class UIButton : MonoBehaviour
     }
     #endregion
 
-    #region ½Ã°£ °ú·Ã
+    #region ì‹œê°„ ê³¼ë ¨
     /// <summary>
-    /// ÀÏ½ÃÁ¤Áö ¹öÆ°
+    /// ì¼ì‹œì •ì§€ ë²„íŠ¼
     /// </summary>
     public void PauseGame()
     {
         GameManager.GM.PauseGame();
-        UIManager.UI.OptionPanel.gameObject.SetActive(true);
+        UIManager.UI.OptionPanel.panel.gameObject.SetActive(true);
     }
 
     /// <summary>
-    /// °ÔÀÓÀç°³ ¹öÆ°
+    /// ê²Œì„ì¬ê°œ ë²„íŠ¼
     /// </summary>
     public void ResumeGame()
     {
         GameManager.GM.ResumeGame();
-        UIManager.UI.OptionPanel.gameObject.SetActive(false);
+        UIManager.UI.OptionPanel.panel.gameObject.SetActive(false);
     }
     #endregion
 
-    #region ¼Ò¸® °ü·Ã
+    #region ì†Œë¦¬ ê´€ë ¨
     /// <summary>
-    /// º¼·ı ¼³Á¤
+    /// ë³¼ë¥¨ ì„¤ì •
     /// </summary>
     /// <param name="volumeScale"></param>
     public void SetVolume(float volumeScale)
