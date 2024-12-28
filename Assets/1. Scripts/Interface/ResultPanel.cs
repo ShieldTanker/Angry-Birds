@@ -36,10 +36,8 @@ public class ResultPanel : MonoBehaviour
         panel.SetActive(true);
 
         if (isCleared)
-            // SoundManager.SM.PlayRandomAudio(audioSource, clearClips);
             SoundManager.SM.PlayRandomAudio(clearClips);
         else
-            // SoundManager.SM.PlayRandomAudio(audioSource, failedClips);
             SoundManager.SM.PlayRandomAudio(failedClips);
 
         GameManager.GM.PauseGame();

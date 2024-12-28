@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour
 
     public bool GamePause {  get; private set; }
 
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
     #region 씬 관련
     string sceneName;
     public string SceneName
@@ -33,6 +38,12 @@ public class GameManager : MonoBehaviour
     {
         ResumeGame();
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void StageMove(int stageNum)
+    {
+        ResumeGame();
+        SceneManager.LoadScene("Stage_" + stageNum);
     }
 
     public void RestartScene()

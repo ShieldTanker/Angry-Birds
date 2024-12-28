@@ -54,6 +54,7 @@ public class StageManager : MonoBehaviour
 
     [Space]
     public AudioSource audioSource;
+    public AudioClip stageAudioClip;
     public AudioClip[] startAudios;
     public AudioClip[] adjustAudios;
 
@@ -64,6 +65,8 @@ public class StageManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         // 뷰 포인트 순회 하기
         StartCoroutine(circuitViewPoint());
+
+        SoundManager.SM.SetBGM(stageAudioClip);
         SoundManager.SM.PlayRandomAudio(startAudios);
     }
     #endregion

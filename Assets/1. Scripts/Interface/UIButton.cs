@@ -1,9 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIButton : MonoBehaviour
 {
+    public void ExitGame()
+    {
+        GameManager.GM.ExitGame();
+    }
+
     #region 씬 관련
     /// <summary>
     /// 씬 재시작 버튼
@@ -20,6 +26,11 @@ public class UIButton : MonoBehaviour
     public void LoadScene(string sceneName)
     {
         GameManager.GM.LoadScene(sceneName);
+    }
+
+    public void StageMove(int sceneIdx)
+    {
+        GameManager.GM.StageMove(sceneIdx);
     }
     #endregion
 

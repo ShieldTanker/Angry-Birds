@@ -15,12 +15,22 @@ public class SoundManager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
+
+        DontDestroyOnLoad(gameObject);
     }
     #endregion
 
     public AudioSource audioSource;
+    [SerializeField] AudioClip titleBGM;
 
     public List<AudioSource> audioSources = new List<AudioSource>();
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+        SetBGM(titleBGM);
+    }
+
     public void SetVolume(float volumeScale)
     {
         GameManager.GM.SetVolumeScale(volumeScale);
@@ -31,7 +41,37 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    /// <summary>
+    public void SetBGM(AudioClip audioClip)
+    {
+        if (audioClip == null)
+        {
+            Debug.Log("asdasdasd");
+            return;
+        }
+
+        audioSource.clip = audioClip;
+        audioSource.Play();
+    }
+
+    public void PlayRandomAudio(AudioClip[] clips)
+    {
+        if (audioSource == null || clips.Length <= 0)
+            return;
+
+        int idx = UnityEngine.Random.Range(0, clips.Length);
+
+        PlayAudio(clips[idx]);
+    }
+
+    public virtual void PlayAudio(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+            return;
+
+        audioSource.PlayOneShot(clip);
+    }
+}
+/*    /// <summary>
     /// 랜덤 오디오 재생
     /// </summary>
     /// <param name="source"></param>
@@ -41,16 +81,6 @@ public class SoundManager : MonoBehaviour
         if (source == null || clips.Length <= 0)
             return;
         
-        int idx = UnityEngine.Random.Range(0, clips.Length);
-
-        PlayAudio(clips[idx]);
-    }
-
-    public void PlayRandomAudio(AudioClip[] clips)
-    {
-        if (audioSource == null || clips.Length <= 0)
-            return;
-
         int idx = UnityEngine.Random.Range(0, clips.Length);
 
         PlayAudio(clips[idx]);
@@ -68,12 +98,4 @@ public class SoundManager : MonoBehaviour
 
         source.PlayOneShot(clip);
     }
-
-    public virtual void PlayAudio(AudioClip clip)
-    {
-        if (audioSource == null || clip == null)
-            return;
-
-        audioSource.PlayOneShot(clip);
-    }
-}
+*/
