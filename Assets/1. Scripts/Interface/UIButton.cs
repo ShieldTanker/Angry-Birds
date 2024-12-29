@@ -41,6 +41,12 @@ public class UIButton : MonoBehaviour
         GameManager.GM.LoadScene(sceneName);
     }
 
+    public void GoToTitle()
+    {
+        SoundManager.SM.SetBGM(SoundManager.SM.titleBGM);
+        GameManager.GM.LoadScene("Title");
+    }
+
     public void StageMove(int sceneIdx)
     {
         GameManager.GM.StageMove(sceneIdx);

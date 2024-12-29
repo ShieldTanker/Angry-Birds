@@ -21,7 +21,7 @@ public class SoundManager : MonoBehaviour
     #endregion
 
     public AudioSource audioSource;
-    [SerializeField] AudioClip titleBGM;
+    public AudioClip titleBGM;
 
     public List<AudioSource> audioSources = new List<AudioSource>();
 
