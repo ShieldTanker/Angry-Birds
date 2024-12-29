@@ -310,7 +310,7 @@ MonoBehaviour:
   point: 1500
   otherSpeed: 0
   destroyTime: 5
-  resistance: 2
+  resistance: 5
   soundResistance: 2
   pointTxt: {fileID: 3966470940758035537}
   endDistance: 1.4
@@ -326,8 +326,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c25824e02267f0344b9f422966ec3791, type: 3}
   flySprite: {fileID: 50450414, guid: 79f5df3111059ae4f825a08d14029830, type: 3}
   abilitiedImage: {fileID: 21300000, guid: efb92beb9f50e7d49883eacd854f6937, type: 3}
-  flyAudioClip: {fileID: 0}
-  selectedAudioClip: {fileID: 0}
+  flyAudioClip: {fileID: 8300000, guid: 2be6d7e1715f94143aa6e98abb5f842d, type: 3}
+  selectedAudioClip: {fileID: 8300000, guid: d641a96b4191b4845ba6a124c00a3ab0, type: 3}
   abilityAudioClip: {fileID: 8300000, guid: 7ab0156a252b947429d78c84bf2031ea, type: 3}
   currentSpeed: 0
   power: 1.5

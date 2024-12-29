@@ -28,19 +28,28 @@ public class SoundManager : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        LoadVolumeScale();
+
         SetBGM(titleBGM);
     }
 
+    #region 볼륨 관련
+    public float volume;
     public void SetVolume(float volumeScale)
     {
-        GameManager.GM.SetVolumeScale(volumeScale);
-
-        foreach (AudioSource source in audioSources)
-        {
-            source.volume = GameManager.GM.volumeScale;
-        }
+        PlayerPrefs.SetFloat("volumeScale", volumeScale);
+        volume = volumeScale;
+        audioSource.volume = volume;
     }
 
+    public void LoadVolumeScale()
+    {
+        volume = PlayerPrefs.GetFloat("volumeScale", 1);
+        audioSource.volume = volume;
+    }
+    #endregion
+
+    #region 오디오 클립 설정 관련
     public void SetBGM(AudioClip audioClip)
     {
         if (audioClip == null)
@@ -52,15 +61,21 @@ public class SoundManager : MonoBehaviour
         audioSource.clip = audioClip;
         audioSource.Play();
     }
+    public int SetRandomAudioIdx(AudioClip[] stageAudioClips)
+    {
+        int idx = 0;
 
+        if (audioSource != null && stageAudioClips.Length > 0)
+            idx = UnityEngine.Random.Range(0, stageAudioClips.Length);
+
+        return idx;
+    }
+    #endregion
+
+    #region 오디오 클립 재생 관련
     public void PlayRandomAudio(AudioClip[] clips)
     {
-        if (audioSource == null || clips.Length <= 0)
-            return;
-
-        int idx = UnityEngine.Random.Range(0, clips.Length);
-
-        PlayAudio(clips[idx]);
+        PlayAudio(clips[SetRandomAudioIdx(clips)]);
     }
 
     public virtual void PlayAudio(AudioClip clip)
@@ -70,32 +85,6 @@ public class SoundManager : MonoBehaviour
 
         audioSource.PlayOneShot(clip);
     }
+
+    #endregion
 }
-/*    /// <summary>
-    /// 랜덤 오디오 재생
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="clips"></param>
-    public void PlayRandomAudio(AudioSource source, AudioClip[] clips)
-    {
-        if (source == null || clips.Length <= 0)
-            return;
-        
-        int idx = UnityEngine.Random.Range(0, clips.Length);
-
-        PlayAudio(clips[idx]);
-    }
-
-    /// <summary>
-    /// 해당 오디오 클립 재생
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="clip"></param>
-    public virtual void PlayAudio(AudioSource source, AudioClip clip)
-    {
-        if (source == null || clip == null)
-            return;
-
-        source.PlayOneShot(clip);
-    }
-*/

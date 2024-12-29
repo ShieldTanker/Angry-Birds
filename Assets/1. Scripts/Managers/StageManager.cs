@@ -54,8 +54,7 @@ public class StageManager : MonoBehaviour
 
     [Space]
     public AudioSource audioSource;
-    public AudioClip stageAudioClip;
-    public AudioClip[] startAudios;
+    public AudioClip[] stageAudioClips;
     public AudioClip[] adjustAudios;
 
 
@@ -66,17 +65,14 @@ public class StageManager : MonoBehaviour
         // 뷰 포인트 순회 하기
         StartCoroutine(circuitViewPoint());
 
-        SoundManager.SM.SetBGM(stageAudioClip);
-        SoundManager.SM.PlayRandomAudio(startAudios);
+        SoundManager.SM.SetBGM(stageAudioClips[SoundManager.SM.SetRandomAudioIdx(stageAudioClips)]);
     }
     #endregion
-
 
     #region 만든 함수
 
 
     #endregion
-
 
     #region 코루틴
     public void CheckCount()

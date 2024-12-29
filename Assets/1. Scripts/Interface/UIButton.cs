@@ -5,10 +5,23 @@ using UnityEngine.SceneManagement;
 
 public class UIButton : MonoBehaviour
 {
+    public GameObject[] pannels;
     public void ExitGame()
     {
         GameManager.GM.ExitGame();
     }
+
+    #region 오브젝트 활성화 / 비활성화 관련
+    public void EnableObject(int idx)
+    {
+        pannels[idx].SetActive(true);
+    }
+
+    public void DisAbleObject(int idx)
+    {
+        pannels[idx].SetActive(false);
+    }
+    #endregion
 
     #region 씬 관련
     /// <summary>
@@ -41,7 +54,6 @@ public class UIButton : MonoBehaviour
     public void PauseGame()
     {
         GameManager.GM.PauseGame();
-        UIManager.UI.OptionPanel.panel.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -50,7 +62,6 @@ public class UIButton : MonoBehaviour
     public void ResumeGame()
     {
         GameManager.GM.ResumeGame();
-        UIManager.UI.OptionPanel.panel.gameObject.SetActive(false);
     }
     #endregion
 

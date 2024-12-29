@@ -55,7 +55,7 @@ MonoBehaviour:
   point: 800
   otherSpeed: 0
   destroyTime: 0
-  resistance: 2
+  resistance: 5
   soundResistance: 2
   pointTxt: {fileID: 5062509340313486356}
   endDistance: 1.4

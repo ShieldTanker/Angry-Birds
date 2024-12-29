@@ -21,6 +21,16 @@ public class GameManager : MonoBehaviour
 
     public bool GamePause {  get; private set; }
 
+    public bool resetData;
+
+    private void Start()
+    {
+        if (resetData)
+        {
+            PlayerPrefs.DeleteAll();
+        }
+    }
+
     public void ExitGame()
     {
         Application.Quit();
@@ -64,27 +74,6 @@ public class GameManager : MonoBehaviour
     {
         GamePause = false;
         Time.timeScale = 1;
-    }
-    #endregion
-
-    #region 소리 관련
-    public float volumeScale;
-
-    /// <summary>
-    /// 볼륨값 저장
-    /// </summary>
-    public void SetVolumeScale(float volumeScale)
-    {
-        PlayerPrefs.SetFloat("volumeScale", volumeScale);
-        this.volumeScale = volumeScale;
-    }
-
-    /// <summary>
-    /// 볼륨값 불러오기
-    /// </summary>
-    public void LoadVolumeScale()
-    {
-        volumeScale = PlayerPrefs.GetFloat("volumeScale", 1);
     }
     #endregion
 }
